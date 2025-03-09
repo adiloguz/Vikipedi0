@@ -1,0 +1,2477 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <title>Neon Wikipedia</title>
+    <style>
+        :root {
+            --primary-color: #ff00ff;
+            --secondary-color: #00ffff;
+            --background-color: #121212;
+            --text-color: #ffffff;
+            --glow-strength: 5px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 20px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            padding: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 var(--glow-strength) var(--primary-color),
+                        0 0 calc(var(--glow-strength) * 0.5) var(--secondary-color);
+            animation: pulse 2s infinite alternate;
+        }
+
+        .logo::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                        rgba(255, 0, 255, 0.2), 
+                        rgba(0, 255, 255, 0.2));
+            z-index: -1;
+            filter: blur(20px);
+        }
+
+        .search-container {
+            margin: 20px auto;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: 30px;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: var(--text-color);
+            font-size: 1.1rem;
+            box-shadow: 0 0 var(--glow-strength) var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            box-shadow: 0 0 calc(var(--glow-strength) * 2) var(--primary-color);
+            border-color: var(--secondary-color);
+        }
+
+        .search-button {
+            position: absolute;
+            right: 5px;
+            top: 60px;
+            bottom: 5px;
+            border: none;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            color: var(--text-color);
+            padding: 0 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .search-button:hover {
+            box-shadow: 0 0 15px var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        main {
+            position: relative;
+            background-color: rgba(20, 20, 20, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .neon-border {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            border-radius: 15px;
+            box-shadow: inset 0 0 20px var(--primary-color),
+                        0 0 20px var(--secondary-color);
+            z-index: -1;
+        }
+
+        .neon-border::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border: 2px solid transparent;
+            border-radius: 15px;
+            background: linear-gradient(45deg, 
+                        var(--primary-color), 
+                        transparent, 
+                        var(--secondary-color), 
+                        transparent) border-box;
+            -webkit-mask: linear-gradient(#fff 0 0) padding-box,
+                          linear-gradient(#fff 0 0);
+            -webkit-mask-composite: destination-out;
+            mask-composite: exclude;
+            animation: rotate 6s linear infinite;
+        }
+
+        #content-container {
+            margin-top: 20px;
+        }
+
+        .article-title {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--secondary-color);
+            text-shadow: 0 0 5px var(--secondary-color);
+            display: inline-block;
+        }
+
+        .article-content {
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+
+        .article-content h2 {
+            color: var(--primary-color);
+            margin: 25px 0 15px;
+            font-size: 1.8rem;
+            text-shadow: 0 0 3px var(--primary-color);
+        }
+
+        .article-content h3 {
+            color: var(--secondary-color);
+            margin: 20px 0 10px;
+            font-size: 1.4rem;
+        }
+
+        .article-content p {
+            margin-bottom: 15px;
+        }
+
+        .article-content ul {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .article-content li {
+            margin-bottom: 8px;
+        }
+
+        .article-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .article-content a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            display: inline-block;
+        }
+
+        .article-content a:hover {
+            color: var(--secondary-color);
+            text-shadow: 0 0 5px var(--secondary-color);
+        }
+
+        .article-content a::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            bottom: -2px;
+            left: 0;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .article-content a:hover::after {
+            transform: scaleX(1);
+        }
+
+        .loader {
+            display: none;
+            width: 80px;
+            height: 80px;
+            margin: 30px auto;
+            position: relative;
+        }
+
+        .loader:before, .loader:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 5px solid transparent;
+            border-top-color: var(--primary-color);
+            animation: spin 1.5s linear infinite;
+        }
+
+        .loader:after {
+            border-top-color: var(--secondary-color);
+            animation-duration: 1s;
+        }
+
+        .related-articles {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .related-articles h3 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            text-shadow: 0 0 5px var(--primary-color);
+        }
+
+        .related-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .related-item {
+            flex: 1 1 300px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .related-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 15px var(--primary-color);
+        }
+
+        .related-item h4 {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+
+        .error-message {
+            color: #ff6b6b;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.2rem;
+            background-color: rgba(255, 0, 0, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .history-container {
+            margin-top: 30px;
+        }
+
+        .history-title {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            text-shadow: 0 0 3px var(--primary-color);
+        }
+
+        .history-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .history-item {
+            background: linear-gradient(45deg, rgba(255, 0, 255, 0.2), rgba(0, 255, 255, 0.2));
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .history-item:hover {
+            background: linear-gradient(45deg, rgba(255, 0, 255, 0.4), rgba(0, 255, 255, 0.4));
+            transform: translateY(-2px);
+            box-shadow: 0 0 10px var(--primary-color);
+        }
+
+        .clear-history {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff6b6b;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        .clear-history:hover {
+            background: rgba(255, 0, 0, 0.4);
+            box-shadow: 0 0 10px #ff6b6b;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.5);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .control-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .control-btn {
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 0 10px var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px var(--secondary-color);
+        }
+
+        .theme-toggle {
+            position: relative;
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(30deg);
+        }
+
+        .light-theme {
+            --background-color: #f0f4f8;
+            --text-color: #333333;
+        }
+
+        .light-theme main {
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .light-theme .search-input {
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #333;
+            border-color: var(--primary-color);
+        }
+        
+        .light-theme .article-content {
+            color: #333;
+        }
+        
+        .light-theme .article-content h2 {
+            color: #9900cc;
+        }
+        
+        .light-theme .article-content h3 {
+            color: #0088cc;
+        }
+
+        .light-theme .related-item {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+
+        .light-theme .related-item h4 {
+            color: #0088cc;
+        }
+
+        .light-theme .history-item {
+            background: linear-gradient(45deg, rgba(153, 0, 204, 0.2), rgba(0, 136, 204, 0.2));
+            color: #333;
+        }
+
+        .light-theme .history-item:hover {
+            background: linear-gradient(45deg, rgba(153, 0, 204, 0.4), rgba(0, 136, 204, 0.4));
+        }
+
+        .light-theme .control-btn {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            box-shadow: 0 0 10px rgba(153, 0, 204, 0.5);
+        }
+
+        .light-theme .neon-border {
+            box-shadow: inset 0 0 10px var(--primary-color),
+                        0 0 10px var(--secondary-color);
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 15px var(--secondary-color);
+        }
+
+        .lang-selector {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+        }
+
+        .lang-selector select {
+            background: rgba(0, 0, 0, 0.5);
+            color: var(--text-color);
+            border: 1px solid var(--primary-color);
+            padding: 8px 15px;
+            border-radius: 20px;
+            outline: none;
+            box-shadow: 0 0 5px var(--primary-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .light-theme .lang-selector select {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+        }
+
+        .lang-selector select:focus {
+            box-shadow: 0 0 10px var(--secondary-color);
+        }
+
+        .bookmark-container {
+            margin-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+        }
+
+        .bookmark-title {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            text-shadow: 0 0 3px var(--primary-color);
+        }
+
+        .bookmark-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .bookmark-item {
+            flex: 1 1 300px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .light-theme .bookmark-item {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+
+        .bookmark-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 15px var(--primary-color);
+        }
+
+        .bookmark-item h4 {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+
+        .light-theme .bookmark-item h4 {
+            color: #0088cc;
+        }
+
+        .bookmark-item p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .remove-bookmark {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .light-theme .remove-bookmark {
+            color: rgba(0, 0, 0, 0.5);
+        }
+
+        .remove-bookmark:hover {
+            color: #ff6b6b;
+            transform: scale(1.2);
+        }
+
+        .bookmark-btn {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            margin-top: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .bookmark-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 15px var(--secondary-color);
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 120px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.8rem;
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .color-picker-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 1000;
+            box-shadow: 0 0 20px var(--primary-color);
+            display: none;
+            width: 300px;
+        }
+
+        .light-theme .color-picker-container {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 0 20px rgba(153, 0, 204, 0.5);
+        }
+
+        .color-picker-title {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            text-shadow: 0 0 3px var(--primary-color);
+        }
+
+        .color-option {
+            margin-bottom: 15px;
+        }
+
+        .color-option label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-color);
+        }
+
+        .light-theme .color-option label {
+            color: #333;
+        }
+
+        .color-picker-input {
+            width: 100%;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--primary-color);
+            color: var(--text-color);
+            border-radius: 5px;
+        }
+
+        .light-theme .color-picker-input {
+            background: rgba(255, 255, 255, 0.8);
+            color: #333;
+        }
+
+        .color-picker-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .color-picker-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .save-colors {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .save-colors:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .cancel-colors {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--text-color);
+        }
+
+        .light-theme .cancel-colors {
+            background: rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+
+        .cancel-colors:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .reset-colors {
+            background: rgba(255, 0, 0, 0.3);
+            color: var(--text-color);
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .reset-colors:hover {
+            background: rgba(255, 0, 0, 0.5);
+        }
+
+        .info-panel {
+            position: fixed;
+            top: 0;
+            left: -350px;
+            width: 350px;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            transition: left 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .light-theme .info-panel {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-panel.open {
+            left: 0;
+        }
+
+        .info-panel-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .light-theme .info-panel-close {
+            color: #333;
+        }
+
+        .info-panel-close:hover {
+            transform: rotate(90deg);
+            color: var(--primary-color);
+        }
+
+        .info-panel-title {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 0 0 5px var(--primary-color);
+        }
+
+        .info-panel-section {
+            margin-bottom: 30px;
+        }
+
+        .info-panel-section h3 {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 5px;
+        }
+
+        .light-theme .info-panel-section h3 {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .info-panel-section p {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .info-panel-section ul {
+            margin-left: 20px;
+            margin-bottom: 10px;
+        }
+
+        .info-panel-section li {
+            margin-bottom: 5px;
+        }
+
+        .font-size-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .font-size-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .font-size-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px var(--secondary-color);
+        }
+
+        .font-size-display {
+            font-size: 1rem;
+            color: var(--text-color);
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .light-theme .font-size-display {
+            color: #333;
+        }
+
+        .voice-search {
+            margin-left: 10px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .voice-search:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px var(--secondary-color);
+        }
+
+        .voice-search i {
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .voice-recording {
+            animation: pulse-record 1s infinite alternate;
+        }
+
+        @keyframes pulse-record {
+            0% {
+                background: linear-gradient(45deg, #ff0000, #ff6666);
+                transform: scale(1);
+            }
+            100% {
+                background: linear-gradient(45deg, #ff6666, #ff0000);
+                transform: scale(1.1);
+            }
+        }
+
+        .search-options {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+            gap: 10px;
+        }
+
+        .search-option {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-color);
+            padding: 5px 10px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .light-theme .search-option {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+
+        .search-option:hover {
+            background: linear-gradient(45deg, rgba(255, 0, 255, 0.3), rgba(0, 255, 255, 0.3));
+            transform: translateY(-2px);
+        }
+
+        .search-option.active {
+            background: linear-gradient(45deg, rgba(255, 0, 255, 0.4), rgba(0, 255, 255, 0.4));
+            box-shadow: 0 0 5px var(--primary-color);
+        }
+
+        .toc-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .light-theme .toc-container {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .toc-title {
+            color: var(--primary-color);
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 3px var(--primary-color);
+        }
+
+        .toc-list {
+            list-style-type: none;
+        }
+
+        .toc-item {
+            margin-bottom: 8px;
+        }
+
+        .toc-link {
+            color: var(--secondary-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .toc-link:hover {
+            transform: translateX(5px);
+            text-shadow: 0 0 5px var(--secondary-color);
+        }
+
+        .image-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .gallery-item {
+            flex: 1 1 200px;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px var(--primary-color);
+        }
+
+        .gallery-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .gallery-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px;
+            font-size: 0.9rem;
+            transform: translateY(100%);
+            transition: all 0.3s ease;
+        }
+
+        .gallery-item:hover .gallery-caption {
+            transform: translateY(0);
+        }
+
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .lightbox-image {
+            max-width: 90%;
+            max-height: 80vh;
+            border-radius: 5px;
+        }
+
+        .lightbox-caption {
+            color: white;
+            margin-top: 20px;
+            font-size: 1.1rem;
+            max-width: 80%;
+            text-align: center;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .lightbox-close:hover {
+            color: var(--primary-color);
+            transform: rotate(90deg);
+        }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+            padding: 0 30px;
+        }
+
+        .lightbox-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(0, 0, 0, 0.5);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lightbox-btn:hover {
+            background: var(--primary-color);
+            transform: scale(1.1);
+        }
+
+        @keyframes pulse {
+            0% {
+                text-shadow: 0 0 var(--glow-strength) var(--primary-color),
+                            0 0 calc(var(--glow-strength) * 0.5) var(--secondary-color);
+            }
+            100% {
+                text-shadow: 0 0 calc(var(--glow-strength) * 2) var(--primary-color),
+                            0 0 var(--glow-strength) var(--secondary-color);
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2rem;
+            }
+
+            .search-container {
+                max-width: 100%;
+            }
+
+            .search-button {
+                padding: 0 15px;
+                font-size: 0.9rem;
+            }
+
+            main {
+                padding: 20px;
+            }
+
+            .article-title {
+                font-size: 2rem;
+            }
+
+            .article-content h2 {
+                font-size: 1.5rem;
+            }
+
+            .article-content h3 {
+                font-size: 1.2rem;
+            }
+
+            .related-item, .bookmark-item {
+                flex: 1 1 100%;
+            }
+
+            .control-panel {
+                top: auto;
+                bottom: 20px;
+                right: 20px;
+                flex-direction: row;
+            }
+
+            .info-panel {
+                width: 100%;
+                left: -100%;
+            }
+
+            .lang-selector {
+                position: static;
+                margin-bottom: 20px;
+                text-align: center;
+            }
+
+            .color-picker-container {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="lang-selector">
+            <select id="language-select">
+                <option value="tr">Türkçe</option>
+                <option value="en">English</option>
+                <option value="de">Deutsch</option>
+                <option value="fr">Français</option>
+                <option value="es">Español</option>
+                <option value="ja">日本語</option>
+                <option value="ru">Русский</option>
+                <option value="zh">中文</option>
+                <option value="ar">العربية</option>
+            </select>
+        </div>
+
+        <div class="control-panel">
+            <button class="control-btn theme-toggle tooltip" id="theme-toggle">
+                🌙
+                <span class="tooltiptext">Tema Değiştir</span>
+            </button>
+            <button class="control-btn tooltip" id="customize-btn">
+                🎨
+                <span class="tooltiptext">Renkler</span>
+            </button>
+            <button class="control-btn tooltip" id="info-btn">
+                ℹ️
+                <span class="tooltiptext">Bilgi</span>
+            </button>
+            <button class="control-btn tooltip" id="font-size-btn">
+                Aa
+                <span class="tooltiptext">Yazı Boyutu</span>
+            </button>
+        </div>
+
+        <header>
+            <div class="header-content">
+                <h1 class="logo">Vikipedi</h1>
+                <div class="search-container">
+                    <input type="text" id="search-input" class="search-input" placeholder="Arama yapmak için yazın...">
+                    <button id="search-button" class="search-button">Ara</button>
+                    <button class="voice-search tooltip" id="voice-search">
+                        <i>🎤</i>
+                        <span class="tooltiptext">Sesli Arama</span>
+                    </button>
+                </div>
+                <div class="search-options">
+                    <div class="search-option active" data-option="wiki">Vikipedi</div>
+                    <div class="search-option" data-option="images">Görseller</div>
+                    <div class="search-option" data-option="related">İlgili</div>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div class="neon-border"></div>
+            
+            <div id="welcome-message" class="article-content">
+                <h2>Vikipedi'ye Hoş Geldiniz!</h2>
+                <p>Bu özel tasarlanmış Vikipedi arayüzünde, bilgileri göz alıcı neon efektleriyle keşfedebilirsiniz. Aramak istediğiniz konuyu yukarıdaki arama kutusuna yazarak başlayabilirsiniz.</p>
+                <p>Özellikler:</p>
+                <ul>
+                    <li>Neon tasarımlı, göz alıcı arayüz</li>
+                    <li>Hızlı ve detaylı Vikipedi aramaları</li>
+                    <li>İlgili makaleler keşfi</li>
+                    <li>Arama geçmişi</li>
+                    <li>Yer imlerini kaydetme</li>
+                    <li>Açık/Koyu tema desteği</li>
+                    <li>Çok dilli destek (9 dil)</li>
+                    <li>Özelleştirilebilir renkler</li>
+                    <li>Sesli arama</li>
+                    <li>Yazı boyutu ayarı</li>
+                    <li>Görsel galerisi</li>
+                    <li>Basit ve kullanıcı dostu tasarım</li>
+                </ul>
+                <p>Hemen aramaya başlayın ve bilginin ışığında kaybolun!</p>
+            </div>
+
+            <div class="loader" id="loader"></div>
+            <div class="error-message" id="error-message"></div>
+            
+            <div id="content-container"></div>
+
+            <div class="bookmark-container" id="bookmark-container" style="display:none;">
+                <h3 class="bookmark-title">Yer İmleri</h3>
+                <div class="bookmark-list" id="bookmark-list"></div>
+            </div>
+
+            <div class="history-container">
+                <h3 class="history-title">Arama Geçmişi</h3>
+                <div class="history-list" id="history-list"></div>
+                <button class="clear-history" id="clear-history">Geçmişi Temizle</button>
+            </div>
+        </main>
+
+        <footer>
+            <p>© 2025 Geliştirici, Adil Oğuz | Vikipedi içeriği, Wikipedia'nın lisans koşulları altında kullanılmaktadır.</p>
+            <div class="font-size-controls">
+                <button class="font-size-btn" id="decrease-font">-</button>
+                <span class="font-size-display" id="font-size-display">100%</span>
+                <button class="font-size-btn" id="increase-font">+</button>
+            </div>
+        </footer>
+    </div>
+
+    <div class="back-to-top" id="back-to-top">↑</div>
+
+    <div class="color-picker-container" id="color-picker">
+        <h3 class="color-picker-title">Renkleri Özelleştir</h3>
+        <div class="color-option">
+            <label for="primary-color">Ana Renk:</label>
+            <input type="color" id="primary-color" class="color-picker-input" value="#ff00ff">
+        </div>
+        <div class="color-option">
+            <label for="secondary-color">İkincil Renk:</label>
+            <input type="color" id="secondary-color" class="color-picker-input" value="#00ffff">
+        </div>
+        <div class="color-picker-buttons">
+            <button class="color-picker-btn save-colors" id="save-colors">Kaydet</button>
+            <button class="color-picker-btn cancel-colors" id="cancel-colors">İptal</button>
+        </div>
+        <button class="color-picker-btn reset-colors" id="reset-colors">Varsayılana Sıfırla</button>
+    </div>
+
+    <div class="info-panel" id="info-panel">
+        <button class="info-panel-close" id="info-panel-close">✕</button>
+        <h2 class="info-panel-title">Geliştirici Bilgisi</h2>
+        <div class="profile-card">
+  <style>
+    @keyframes neon-pulse {
+      0%, 100% {
+        box-shadow: 0 0 12px var(--neon-color), 0 0 24px var(--neon-color);
+      }
+      50% {
+        box-shadow: 0 0 20px var(--neon-color), 0 0 36px var(--neon-color);
+      }
+    }
+
+    .profile-card {
+      font-family: 'Inter', sans-serif;
+      --neon-color: #4A90E2;
+      --bg-color: #12141c;
+      --text-color: #ffffff;
+      background: var(--bg-color);
+      color: var(--text-color);
+      padding: 30px;
+      border-radius: 16px;
+      max-width: 380px;
+      margin: auto;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      border: 3px solid var(--neon-color);
+      box-shadow: 0 0 14px var(--neon-color);
+    }
+
+    .profile-card::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 16px;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      animation: neon-pulse 2s infinite alternate ease-in-out;
+    }
+
+    .profile-card img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 4px solid var(--neon-color);
+      object-fit: cover;
+      transition: 0.3s;
+      box-shadow: 0 0 10px var(--neon-color);
+    }
+
+    .profile-card img:hover {
+      transform: scale(1.07);
+      box-shadow: 0 0 15px var(--neon-color);
+    }
+
+    .profile-card h1 {
+      font-size: 24px;
+      margin-top: 14px;
+      font-weight: bold;
+    }
+
+    .profile-card p {
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 16px;
+    }
+
+    .profile-card .stats {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 2px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .profile-card .stat {
+      text-align: center;
+    }
+
+    .profile-card .stat-value {
+      font-size: 20px;
+      font-weight: bold;
+      color: var(--neon-color);
+    }
+
+    .profile-card .stat-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+
+    .profile-card .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .profile-card .social-links a {
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-color);
+      text-decoration: none;
+      font-size: 16px;
+      transition: 0.3s;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .profile-card .social-links a:hover {
+      background: var(--neon-color);
+      color: #fff;
+      box-shadow: 0 0 12px var(--neon-color);
+    }
+  </style>
+
+  <img src="img/profile.jpg" alt="Profil Fotoğrafı">
+  <h1>Ad Soyad</h1>
+  <p>Yazılım Geliştirici</p>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-value">5+</div>
+      <div class="stat-label">Yıl Deneyim</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">42</div>
+      <div class="stat-label">Proje</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">4.9</div>
+      <div class="stat-label">Puan</div>
+    </div>
+  </div>
+
+  <div class="social-links">
+    <a href="#"><i class="fab fa-github"></i></a>
+    <a href="#"><i class="fab fa-linkedin"></i></a>
+    <a href="#"><i class="fab fa-twitter"></i></a>
+  </div>
+</div>
+<br >
+        <div class="info-panel-section">
+            <h3>Hakkında</h3>
+            <p>Vikipedi, standart Wikipedia içeriğini modern ve göz alıcı bir arayüzle sunan özel bir uygulamadır. Bu uygulama, Wikipedia API'sini kullanarak bilgileri çeker ve neon efektleriyle süslenmiş bir arayüzde görüntüler.</p>
+        </div>
+        <div class="info-panel-section">
+            <h3>Nasıl Kullanılır</h3>
+            <ul>
+                <li><strong>Arama:</strong> Üst kısımdaki arama kutusuna aramak istediğiniz terimi yazın</li>
+                <li><strong>Dil değiştirme:</strong> Sol üstteki dil seçeneğinden içeriğin dilini değiştirebilirsiniz</li>
+                <li><strong>Tema değiştirme:</strong> Sağ üstteki ay/güneş simgesiyle koyu/açık tema arasında geçiş yapabilirsiniz</li>
+                <li><strong>Yer imi ekleme:</strong> İçerik sayfalarında "Yer İmi Ekle" düğmesini kullanarak sayfaları kaydedebilirsiniz</li>
+                <li><strong>Renk özelleştirme:</strong> Sağ üstteki boya paleti simgesine tıklayarak uygulama renklerini değiştirebilirsiniz</li>
+                <li><strong>Yazı boyutu:</strong> Sayfanın alt kısmındaki + ve - düğmeleriyle içerik yazı boyutunu ayarlayabilirsiniz</li>
+            </ul>
+        </div>
+        <div class="info-panel-section">
+            <h3>Özellikler</h3>
+            <ul>
+                <li>Neon efektli göz alıcı tasarım</li>
+                <li>Hızlı Vikipedi aramaları</li>
+                <li>9 farklı dilde içerik desteği</li>
+                <li>Açık ve koyu tema</li>
+                <li>Özelleştirilebilir renkler</li>
+                <li>Arama geçmişi</li>
+                <li>Yer imleri</li>
+                <li>Sesli arama özelliği</li>
+                <li>Yazı boyutu ayarlama</li>
+                <li>İlgili makaleler önerisi</li>
+                <li>Görsel galeri görüntüleme</li>
+                <li>Tamamen duyarlı tasarım</li>
+            </ul>
+        </div>
+        <div class="info-panel-section">
+            <h3>İletişim</h3>
+            <p>Geri bildirimleriniz ve önerileriniz için bize ulaşabilirsiniz.</p>
+            <p>© 2025 Geliştirici, Adil Oğuz</p>
+        </div>
+    </div>
+
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" id="lightbox-close">✕</button>
+        <img src="" alt="" class="lightbox-image" id="lightbox-image">
+        <div class="lightbox-caption" id="lightbox-caption"></div>
+        <div class="lightbox-nav">
+            <button class="lightbox-btn" id="lightbox-prev">←</button>
+            <button class="lightbox-btn" id="lightbox-next">→</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const searchInput = document.getElementById('search-input');
+            const searchButton = document.getElementById('search-button');
+            const contentContainer = document.getElementById('content-container');
+            const welcomeMessage = document.getElementById('welcome-message');
+            const loader = document.getElementById('loader');
+            const errorMessage = document.getElementById('error-message');
+            const themeToggle = document.getElementById('theme-toggle');
+            const backToTop = document.getElementById('back-to-top');
+            const historyList = document.getElementById('history-list');
+            const clearHistoryBtn = document.getElementById('clear-history');
+            const languageSelect = document.getElementById('language-select');
+            const bookmarkContainer = document.getElementById('bookmark-container');
+            const bookmarkList = document.getElementById('bookmark-list');
+            const customizeBtn = document.getElementById('customize-btn');
+            const colorPicker = document.getElementById('color-picker');
+            const primaryColorInput = document.getElementById('primary-color');
+            const secondaryColorInput = document.getElementById('secondary-color');
+            const saveColorsBtn = document.getElementById('save-colors');
+            const cancelColorsBtn = document.getElementById('cancel-colors');
+            const resetColorsBtn = document.getElementById('reset-colors');
+            const infoBtn = document.getElementById('info-btn');
+            const infoPanel = document.getElementById('info-panel');
+            const infoPanelClose = document.getElementById('info-panel-close');
+            const fontSizeBtn = document.getElementById('font-size-btn');
+            const increaseFontBtn = document.getElementById('increase-font');
+            const decreaseFontBtn = document.getElementById('decrease-font');
+            const fontSizeDisplay = document.getElementById('font-size-display');
+            const voiceSearchBtn = document.getElementById('voice-search');
+            const searchOptions = document.querySelectorAll('.search-option');
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImage = document.getElementById('lightbox-image');
+            const lightboxCaption = document.getElementById('lightbox-caption');
+            const lightboxClose = document.getElementById('lightbox-close');
+            const lightboxPrev = document.getElementById('lightbox-prev');
+            const lightboxNext = document.getElementById('lightbox-next');
+
+            // Variables
+            let searchHistory = JSON.parse(localStorage.getItem('searchHistory')) || [];
+            let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+            let currentLanguage = localStorage.getItem('currentLanguage') || 'tr';
+            let currentFontSize = parseInt(localStorage.getItem('fontSize')) || 100;
+            let currentSearchOption = 'wiki';
+            let galleryImages = [];
+            let currentImageIndex = 0;
+            
+            // Set initial language
+            languageSelect.value = currentLanguage;
+
+            // Set initial font size
+            fontSizeDisplay.textContent = `${currentFontSize}%`;
+            document.documentElement.style.setProperty('--font-size-base', `${currentFontSize}%`);
+            
+            // Load custom colors if available
+            if (localStorage.getItem('primaryColor')) {
+                document.documentElement.style.setProperty('--primary-color', localStorage.getItem('primaryColor'));
+                primaryColorInput.value = localStorage.getItem('primaryColor');
+            }
+            
+            if (localStorage.getItem('secondaryColor')) {
+                document.documentElement.style.setProperty('--secondary-color', localStorage.getItem('secondaryColor'));
+                secondaryColorInput.value = localStorage.getItem('secondaryColor');
+            }
+
+            // Display bookmarks if available
+            if (bookmarks.length > 0) {
+                bookmarkContainer.style.display = 'block';
+                displayBookmarks();
+            }
+
+            // Event Listeners
+            searchButton.addEventListener('click', performSearch);
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+
+            themeToggle.addEventListener('click', toggleTheme);
+            
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 300) {
+                    backToTop.classList.add('visible');
+                } else {
+                    backToTop.classList.remove('visible');
+                }
+            });
+
+            backToTop.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+
+            languageSelect.addEventListener('change', function() {
+                currentLanguage = this.value;
+                localStorage.setItem('currentLanguage', currentLanguage);
+                updatePlaceholderText();
+                if (searchInput.value.trim() !== '') {
+                    performSearch();
+                }
+            });
+
+            clearHistoryBtn.addEventListener('click', function() {
+                searchHistory = [];
+                localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+                displaySearchHistory();
+            });
+
+            customizeBtn.addEventListener('click', function() {
+                colorPicker.style.display = 'block';
+            });
+
+            saveColorsBtn.addEventListener('click', function() {
+                const primaryColor = primaryColorInput.value;
+                const secondaryColor = secondaryColorInput.value;
+                
+                document.documentElement.style.setProperty('--primary-color', primaryColor);
+                document.documentElement.style.setProperty('--secondary-color', secondaryColor);
+                
+                localStorage.setItem('primaryColor', primaryColor);
+                localStorage.setItem('secondaryColor', secondaryColor);
+                
+                colorPicker.style.display = 'none';
+            });
+
+            cancelColorsBtn.addEventListener('click', function() {
+                // Reset to current values
+                primaryColorInput.value = localStorage.getItem('primaryColor') || '#ff00ff';
+                secondaryColorInput.value = localStorage.getItem('secondaryColor') || '#00ffff';
+                colorPicker.style.display = 'none';
+            });
+
+            resetColorsBtn.addEventListener('click', function() {
+                // Reset to defaults
+                const defaultPrimary = '#ff00ff';
+                const defaultSecondary = '#00ffff';
+                
+                document.documentElement.style.setProperty('--primary-color', defaultPrimary);
+                document.documentElement.style.setProperty('--secondary-color', defaultSecondary);
+                
+                localStorage.setItem('primaryColor', defaultPrimary);
+                localStorage.setItem('secondaryColor', defaultSecondary);
+                
+                primaryColorInput.value = defaultPrimary;
+                secondaryColorInput.value = defaultSecondary;
+            });
+
+            infoBtn.addEventListener('click', function() {
+                infoPanel.classList.add('open');
+            });
+
+            infoPanelClose.addEventListener('click', function() {
+                infoPanel.classList.remove('open');
+            });
+
+            increaseFontBtn.addEventListener('click', function() {
+                if (currentFontSize < 200) {
+                    currentFontSize += 10;
+                    updateFontSize();
+                }
+            });
+
+            decreaseFontBtn.addEventListener('click', function() {
+                if (currentFontSize > 70) {
+                    currentFontSize -= 10;
+                    updateFontSize();
+                }
+            });
+
+            fontSizeBtn.addEventListener('click', function() {
+                document.querySelector('.font-size-controls').scrollIntoView({ behavior: 'smooth' });
+            });
+
+            voiceSearchBtn.addEventListener('click', startVoiceSearch);
+
+            searchOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    searchOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    currentSearchOption = this.dataset.option;
+                    
+                    if (searchInput.value.trim() !== '') {
+                        performSearch();
+                    }
+                });
+            });
+
+            lightboxClose.addEventListener('click', function() {
+                lightbox.style.display = 'none';
+            });
+
+            lightboxPrev.addEventListener('click', function() {
+                navigateLightbox(-1);
+            });
+
+            lightboxNext.addEventListener('click', function() {
+                navigateLightbox(1);
+            });
+
+            // Load theme preference
+            if (localStorage.getItem('theme') === 'light') {
+                document.body.classList.add('light-theme');
+                themeToggle.textContent = '☀️';
+            }
+
+            // Display search history
+            displaySearchHistory();
+
+            // Functions
+            function performSearch() {
+                const searchTerm = searchInput.value.trim();
+                
+                if (searchTerm === '') {
+                    showError('Lütfen bir arama terimi girin.');
+                    return;
+                }
+
+                showLoader();
+                hideError();
+                welcomeMessage.style.display = 'none';
+
+                // Add to search history
+                addToSearchHistory(searchTerm);
+
+                switch (currentSearchOption) {
+                    case 'images':
+                        searchImages(searchTerm);
+                        break;
+                    case 'related':
+                        searchRelated(searchTerm);
+                        break;
+                    default:
+                        searchWikipedia(searchTerm);
+                }
+            }
+
+            function searchWikipedia(term) {
+                // Make API request to Wikipedia
+                const apiUrl = `https://${currentLanguage}.wikipedia.org/w/api.php?action=query&format=json&origin=*&prop=extracts|pageimages|links|categories|images&exintro=1&explaintext=1&pithumbsize=500&titles=${encodeURIComponent(term)}&pilimit=1&pllimit=10&imlimit=20`;
+
+                fetch(apiUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        hideLoader();
+                        processWikipediaResponse(data);
+                    })
+                    .catch(error => {
+                        hideLoader();
+                        showError('Bir hata oluştu: ' + error.message);
+                    });
+            }
+
+            function searchImages(term) {
+                const apiUrl = `https://${currentLanguage}.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=images&titles=${encodeURIComponent(term)}&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=800&gimlimit=20`;
+
+                fetch(apiUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        hideLoader();
+                        processImagesResponse(data);
+                    })
+                    .catch(error => {
+                        hideLoader();
+                        showError('Bir hata oluştu: ' + error.message);
+                    });
+            }
+
+            function searchRelated(term) {
+                const apiUrl = `https://${currentLanguage}.wikipedia.org/w/api.php?action=query&format=json&origin=*&list=search&srsearch=${encodeURIComponent(term)}&srlimit=20`;
+
+                fetch(apiUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        hideLoader();
+                        processRelatedResponse(data);
+                    })
+                    .catch(error => {
+                        hideLoader();
+                        showError('Bir hata oluştu: ' + error.message);
+                    });
+            }
+
+            function processWikipediaResponse(data) {
+                const pages = data.query.pages;
+                const pageId = Object.keys(pages)[0];
+                
+                if (pageId === '-1') {
+                    // No results found
+                    showError('Aradığınız terimle ilgili içerik bulunamadı. Lütfen başka bir terim deneyin.');
+                    return;
+                }
+
+                const page = pages[pageId];
+                const title = page.title;
+                const extract = page.extract || 'Bu konu hakkında içerik bulunamadı.';
+                const links = page.links || [];
+                const images = page.images || [];
+                
+                // Check if this page is bookmarked
+                const isBookmarked = bookmarks.some(item => item.title === title);
+                
+                let html = `
+                    <h1 class="article-title">${title}</h1>
+                    <button class="bookmark-btn" id="bookmark-toggle" data-title="${title}" data-extract="${extractShort(extract, 150)}">
+                        ${isBookmarked ? 'Yer İmlerinden Çıkar' : 'Yer İmi Ekle'}
+                    </button>
+                    <div class="article-content">
+                `;
+
+                // Add thumbnail if available
+                if (page.thumbnail && page.thumbnail.source) {
+                    html += `<img src="${page.thumbnail.source}" alt="${title}" style="float: right; margin: 0 0 20px 20px; max-width: 300px;">`;
+                }
+
+                // Create table of contents if extract is long enough
+                if (extract.length > 1000) {
+                    const sections = extractSections(extract);
+                    if (sections.length > 1) {
+                        html += `
+                            <div class="toc-container">
+                                <h3 class="toc-title">İçindekiler</h3>
+                                <ul class="toc-list">
+                        `;
+
+                        sections.forEach((section, index) => {
+                            const sectionId = `section-${index}`;
+                            html += `<li class="toc-item"><a href="#${sectionId}" class="toc-link">${section.title}</a></li>`;
+                        });
+
+                        html += `
+                                </ul>
+                            </div>
+                        `;
+
+                        // Add content with sections
+                        sections.forEach((section, index) => {
+                            const sectionId = `section-${index}`;
+                            html += `<h2 id="${sectionId}">${section.title}</h2>`;
+                            html += `<p>${section.content}</p>`;
+                        });
+                    } else {
+                        // Just add the extract if no clear sections
+                        html += `<p>${extract}</p>`;
+                    }
+                } else {
+                    // Short extract, no TOC needed
+                    html += `<p>${extract}</p>`;
+                }
+
+                // Add image gallery if available
+                if (images.length > 0) {
+                    html += `
+                        <h2>Görseller</h2>
+                        <div class="image-gallery" id="image-gallery">
+                    `;
+
+                    // We'll populate this later in a separate API call
+                    html += `</div>`;
+                }
+
+                // Add related articles if available
+                if (links.length > 0) {
+                    html += `
+                        <div class="related-articles">
+                            <h3>İlgili Konular</h3>
+                            <div class="related-list">
+                    `;
+
+                    // Display up to 6 related links
+                    const relatedLinks = links.filter(link => link.title && !link.title.includes(':')).slice(0, 6);
+                    relatedLinks.forEach(link => {
+                        html += `
+                            <div class="related-item" data-title="${link.title}">
+                                <h4>${link.title}</h4>
+                            </div>
+                        `;
+                    });
+
+                    html += `
+                            </div>
+                        </div>
+                    `;
+                }
+
+                html += `</div>`;
+
+                contentContainer.innerHTML = html;
+
+                // Add event listeners to related items
+                document.querySelectorAll('.related-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        const relatedTitle = this.getAttribute('data-title');
+                        searchInput.value = relatedTitle;
+                        currentSearchOption = 'wiki';
+                        updateSearchOptionUI();
+                        performSearch();
+                    });
+                });
+
+                // Add bookmark toggle functionality
+                const bookmarkToggle = document.getElementById('bookmark-toggle');
+                if (bookmarkToggle) {
+                    bookmarkToggle.addEventListener('click', function() {
+                        const title = this.getAttribute('data-title');
+                        const extract = this.getAttribute('data-extract');
+                        toggleBookmark(title, extract);
+                    });
+                }
+
+                // Add Wikipedia link
+                const wikiLink = document.createElement('p');
+                wikiLink.innerHTML = `<a href="https://${currentLanguage}.wikipedia.org/wiki/${encodeURIComponent(title)}" target="_blank">Wikipedia'da tam makaleyi görüntüle</a>`;
+                wikiLink.style.textAlign = 'center';
+                wikiLink.style.marginTop = '30px';
+                contentContainer.appendChild(wikiLink);
+
+                // Fetch images for gallery if available
+                if (images.length > 0) {
+                    fetchImageGallery(images);
+                }
+            }
+
+            function processImagesResponse(data) {
+                if (!data.query || !data.query.pages) {
+                    showError('Bu konu için görsel bulunamadı.');
+                    return;
+                }
+
+                const pages = data.query.pages;
+                const images = [];
+
+                // Extract image info
+                for (const pageId in pages) {
+                    const page = pages[pageId];
+                    if (page.imageinfo && page.imageinfo.length > 0) {
+                        const imageInfo = page.imageinfo[0];
+                        let caption = 'Görsel';
+                        
+                        // Try to get caption from metadata
+                        if (imageInfo.extmetadata) {
+                            if (imageInfo.extmetadata.ImageDescription) {
+                                caption = imageInfo.extmetadata.ImageDescription.value;
+                                // Remove HTML tags if present
+                                caption = caption.replace(/<[^>]*>/g, '');
+                            }
+                        }
+                        
+                        images.push({
+                            url: imageInfo.url,
+                            thumbUrl: imageInfo.thumburl || imageInfo.url,
+                            caption: caption,
+                            title: page.title.replace('File:', '').replace('Dosya:', '')
+                        });
+                    }
+                }
+
+                if (images.length === 0) {
+                    showError('Bu konu için görsel bulunamadı.');
+                    return;
+                }
+
+                // Store images globally for lightbox
+                galleryImages = images;
+
+                let html = `
+                    <h1 class="article-title">${searchInput.value} - Görseller</h1>
+                    <div class="image-gallery">
+                `;
+
+                images.forEach((image, index) => {
+                    html += `
+                        <div class="gallery-item" data-index="${index}">
+                            <img src="${image.thumbUrl}" alt="${image.title}" class="gallery-image">
+                            <div class="gallery-caption">${truncateText(image.title, 40)}</div>
+                        </div>
+                    `;
+                });
+
+                html += `</div>`;
+
+                contentContainer.innerHTML = html;
+
+                // Add event listeners to gallery items
+                document.querySelectorAll('.gallery-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        openLightbox(index);
+                    });
+                });
+            }
+
+            function processRelatedResponse(data) {
+                if (!data.query || !data.query.search || data.query.search.length === 0) {
+                    showError('İlgili konu bulunamadı.');
+                    return;
+                }
+
+                const results = data.query.search;
+
+                let html = `
+                    <h1 class="article-title">${searchInput.value} - İlgili Konular</h1>
+                    <div class="related-list" style="margin-top: 20px;">
+                `;
+
+                results.forEach(result => {
+                    // Remove HTML tags from snippet
+                    const snippet = result.snippet.replace(/<[^>]*>/g, '');
+                    
+                    html += `
+                        <div class="related-item" data-title="${result.title}" style="margin-bottom: 15px;">
+                            <h4>${result.title}</h4>
+                            <p>${snippet}...</p>
+                        </div>
+                    `;
+                });
+
+                html += `</div>`;
+
+                contentContainer.innerHTML = html;
+
+                // Add event listeners to related items
+                document.querySelectorAll('.related-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        const relatedTitle = this.getAttribute('data-title');
+                        searchInput.value = relatedTitle;
+                        currentSearchOption = 'wiki';
+                        updateSearchOptionUI();
+                        performSearch();
+                    });
+                });
+            }
+
+            function fetchImageGallery(images) {
+                // Get image titles
+                const imageTitles = images.map(img => img.title).slice(0, 10);
+                
+                if (imageTitles.length === 0) return;
+                
+                // Build query for images
+                const imageQuery = imageTitles.join('|');
+                const apiUrl = `https://${currentLanguage}.wikipedia.org/w/api.php?action=query&format=json&origin=*&titles=${encodeURIComponent(imageQuery)}&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=300&iiprop=url`;
+
+                fetch(apiUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.query || !data.query.pages) return;
+                        
+                        const pages = data.query.pages;
+                        const galleryImages = [];
+                        
+                        // Extract image info
+                        for (const pageId in pages) {
+                            const page = pages[pageId];
+                            if (page.imageinfo && page.imageinfo.length > 0) {
+                                galleryImages.push({
+                                    url: page.imageinfo[0].url,
+                                    thumbUrl: page.imageinfo[0].thumburl || page.imageinfo[0].url,
+                                    title: page.title.replace('File:', '').replace('Dosya:', '')
+                                });
+                            }
+                        }
+                        
+                        if (galleryImages.length === 0) return;
+                        
+                        // Update global galleryImages
+                        window.galleryImages = galleryImages;
+                        
+                        // Create gallery HTML
+                        let galleryHtml = '';
+                        galleryImages.forEach((image, index) => {
+                            galleryHtml += `
+                                <div class="gallery-item" data-index="${index}">
+                                    <img src="${image.thumbUrl}" alt="${image.title}" class="gallery-image">
+                                    <div class="gallery-caption">${truncateText(image.title, 40)}</div>
+                                </div>
+                            `;
+                        });
+                        
+                        const galleryElement = document.getElementById('image-gallery');
+                        if (galleryElement) {
+                            galleryElement.innerHTML = galleryHtml;
+                            
+                            // Add event listeners to gallery items
+                            document.querySelectorAll('.gallery-item').forEach(item => {
+                                item.addEventListener('click', function() {
+                                    const index = parseInt(this.getAttribute('data-index'));
+                                    openLightbox(index);
+                                });
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching image gallery:', error);
+                    });
+            }
+
+            function addToSearchHistory(term) {
+                // Remove the term if it already exists
+                searchHistory = searchHistory.filter(item => item !== term);
+                
+                // Add to the beginning of the array
+                searchHistory.unshift(term);
+                
+                // Keep only the last 10 items
+                if (searchHistory.length > 10) {
+                    searchHistory = searchHistory.slice(0, 10);
+                }
+                
+                // Save to localStorage
+                localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+                
+                // Update display
+                displaySearchHistory();
+            }
+
+            function displaySearchHistory() {
+                historyList.innerHTML = '';
+                
+                if (searchHistory.length === 0) {
+                    const emptyMsg = document.createElement('p');
+                    emptyMsg.textContent = 'Arama geçmişiniz burada görünecek.';
+                    historyList.appendChild(emptyMsg);
+                    return;
+                }
+                
+                searchHistory.forEach(term => {
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'history-item';
+                    historyItem.textContent = term;
+                    historyItem.addEventListener('click', function() {
+                        searchInput.value = term;
+                        currentSearchOption = 'wiki';
+                        updateSearchOptionUI();
+                        performSearch();
+                    });
+                    historyList.appendChild(historyItem);
+                });
+            }
+
+            function toggleBookmark(title, extract) {
+                const bookmarkIndex = bookmarks.findIndex(item => item.title === title);
+                
+                if (bookmarkIndex === -1) {
+                    // Add bookmark
+                    bookmarks.push({ title, extract });
+                    document.getElementById('bookmark-toggle').textContent = 'Yer İmlerinden Çıkar';
+                } else {
+                    // Remove bookmark
+                    bookmarks.splice(bookmarkIndex, 1);
+                    document.getElementById('bookmark-toggle').textContent = 'Yer İmi Ekle';
+                }
+                
+                // Save to localStorage
+                localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+                
+                // Update display
+                if (bookmarks.length > 0) {
+                    bookmarkContainer.style.display = 'block';
+                    displayBookmarks();
+                } else {
+                    bookmarkContainer.style.display = 'none';
+                }
+            }
+
+            function displayBookmarks() {
+                bookmarkList.innerHTML = '';
+                
+                bookmarks.forEach(bookmark => {
+                    const bookmarkItem = document.createElement('div');
+                    bookmarkItem.className = 'bookmark-item';
+                    bookmarkItem.innerHTML = `
+                        <h4>${bookmark.title}</h4>
+                        <p>${bookmark.extract}</p>
+                        <button class="remove-bookmark" data-title="${bookmark.title}">✕</button>
+                    `;
+                    bookmarkList.appendChild(bookmarkItem);
+                    
+                    // Add event listener to the bookmark item (for opening)
+                    bookmarkItem.addEventListener('click', function(e) {
+                        if (!e.target.classList.contains('remove-bookmark')) {
+                            searchInput.value = bookmark.title;
+                            currentSearchOption = 'wiki';
+                            updateSearchOptionUI();
+                            performSearch();
+                        }
+                    });
+                    
+                    // Add event listener to the remove button
+                    const removeBtn = bookmarkItem.querySelector('.remove-bookmark');
+                    removeBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const title = this.getAttribute('data-title');
+                        const bookmarkIndex = bookmarks.findIndex(item => item.title === title);
+                        
+                        if (bookmarkIndex !== -1) {
+                            bookmarks.splice(bookmarkIndex, 1);
+                            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+                            displayBookmarks();
+                            
+                            // Hide container if no bookmarks left
+                            if (bookmarks.length === 0) {
+                                bookmarkContainer.style.display = 'none';
+                            }
+                            
+                            // Update button text if currently viewing this page
+                            if (document.getElementById('bookmark-toggle') && 
+                                document.getElementById('bookmark-toggle').getAttribute('data-title') === title) {
+                                document.getElementById('bookmark-toggle').textContent = 'Yer İmi Ekle';
+                            }
+                        }
+                    });
+                });
+            }
+
+            function updateFontSize() {
+                document.documentElement.style.fontSize = `${currentFontSize}%`;
+                fontSizeDisplay.textContent = `${currentFontSize}%`;
+                localStorage.setItem('fontSize', currentFontSize);
+            }
+
+            function startVoiceSearch() {
+                // Check if browser supports speech recognition
+                if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                    showError('Tarayıcınız sesli aramayı desteklemiyor.');
+                    return;
+                }
+                
+                // Create speech recognition instance
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                const recognition = new SpeechRecognition();
+                
+                // Set recognition options
+                recognition.lang = languageCodeForSpeech(currentLanguage);
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                
+                // Add recording class to button
+                voiceSearchBtn.classList.add('voice-recording');
+                
+                // Start listening
+                recognition.start();
+                
+                // Results event
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    searchInput.value = transcript;
+                    performSearch();
+                };
+                
+                // End event
+                recognition.onend = function() {
+                    voiceSearchBtn.classList.remove('voice-recording');
+                };
+                
+                // Error event
+                recognition.onerror = function(event) {
+                    voiceSearchBtn.classList.remove('voice-recording');
+                    showError('Ses tanıma hatası: ' + event.error);
+                };
+            }
+
+            function languageCodeForSpeech(wikiLang) {
+                // Map Wikipedia language codes to speech recognition language codes
+                const langMap = {
+                    'en': 'en-US',
+                    'tr': 'tr-TR',
+                    'de': 'de-DE',
+                    'fr': 'fr-FR',
+                    'es': 'es-ES',
+                    'ja': 'ja-JP',
+                    'ru': 'ru-RU',
+                    'zh': 'zh-CN',
+                    'ar': 'ar-SA'
+                };
+                
+                return langMap[wikiLang] || 'en-US';
+            }
+
+            function updateSearchOptionUI() {
+                searchOptions.forEach(option => {
+                    option.classList.remove('active');
+                    if (option.dataset.option === currentSearchOption) {
+                        option.classList.add('active');
+                    }
+                });
+            }
+
+            function openLightbox(index) {
+                if (!galleryImages || galleryImages.length === 0) return;
+                
+                currentImageIndex = index;
+                const image = galleryImages[index];
+                
+                lightboxImage.src = image.url;
+                lightboxCaption.textContent = image.title || image.caption || '';
+                lightbox.style.display = 'flex';
+            }
+
+            function navigateLightbox(direction) {
+                if (!galleryImages || galleryImages.length === 0) return;
+                
+                currentImageIndex = (currentImageIndex + direction + galleryImages.length) % galleryImages.length;
+                const image = galleryImages[currentImageIndex];
+                
+                lightboxImage.src = image.url;
+                lightboxCaption.textContent = image.title || image.caption || '';
+            }
+
+            function showLoader() {
+                loader.style.display = 'block';
+                contentContainer.innerHTML = '';
+            }
+
+            function hideLoader() {
+                loader.style.display = 'none';
+            }
+
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+            }
+
+            function hideError() {
+                errorMessage.style.display = 'none';
+            }
+
+            function toggleTheme() {
+                document.body.classList.toggle('light-theme');
+                
+                if (document.body.classList.contains('light-theme')) {
+                    localStorage.setItem('theme', 'light');
+                    themeToggle.textContent = '☀️';
+                } else {
+                    localStorage.setItem('theme', 'dark');
+                    themeToggle.textContent = '🌙';
+                }
+            }
+
+            function updatePlaceholderText() {
+                switch(currentLanguage) {
+                    case 'en':
+                        searchInput.placeholder = 'Type to search...';
+                        break;
+                    case 'de':
+                        searchInput.placeholder = 'Suchbegriff eingeben...';
+                        break;
+                    case 'fr':
+                        searchInput.placeholder = 'Tapez pour rechercher...';
+                        break;
+                    case 'es':
+                        searchInput.placeholder = 'Escriba para buscar...';
+                        break;
+                    case 'ja':
+                        searchInput.placeholder = '検索するには入力...';
+                        break;
+                    case 'ru':
+                        searchInput.placeholder = 'Введите для поиска...';
+                        break;
+                    case 'zh':
+                        searchInput.placeholder = '输入搜索内容...';
+                        break;
+                    case 'ar':
+                        searchInput.placeholder = 'اكتب للبحث...';
+                        break;
+                    case 'tr':
+                    default:
+                        searchInput.placeholder = 'Arama yapın örnek "Batman" ';
+                        break;
+                }
+            }
+
+            // Helper functions
+            function truncateText(text, maxLength) {
+                if (text.length > maxLength) {
+                    return text.substring(0, maxLength) + '...';
+                }
+                return text;
+            }
+
+            function extractShort(text, maxLength) {
+                // Clean text for use as attribute
+                let clean = text.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                return truncateText(clean, maxLength);
+            }
+
+            function extractSections(text) {
+                // Simple section extraction based on newlines and length
+                const paragraphs = text.split('\n\n').filter(p => p.trim().length > 0);
+                
+                if (paragraphs.length <= 1) {
+                    return [{
+                        title: 'Genel Bakış',
+                        content: text
+                    }];
+                }
+                
+                const sections = [];
+                let currentSection = {
+                    title: 'Genel Bakış',
+                    content: paragraphs[0]
+                };
+                sections.push(currentSection);
+                
+                for (let i = 1; i < paragraphs.length; i++) {
+                    const paragraph = paragraphs[i];
+                    
+                    // If paragraph is short enough, consider it a heading
+                    if (paragraph.length < 100 && paragraph.length > 10 && !paragraph.endsWith('.')) {
+                        currentSection = {
+                            title: paragraph,
+                            content: ''
+                        };
+                        sections.push(currentSection);
+                    } else {
+                        if (currentSection.content) {
+                            currentSection.content += '\n\n' + paragraph;
+                        } else {
+                            currentSection.content = paragraph;
+                        }
+                    }
+                }
+                
+                // Filter out sections with no content
+                return sections.filter(section => section.content.trim().length > 0);
+            }
+
+            // Initial placeholder update
+            updatePlaceholderText();
+        });
+    </script>
+</body>
+</html>
